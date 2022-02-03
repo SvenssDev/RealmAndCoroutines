@@ -21,17 +21,16 @@ class ProfileViewModel: ViewModel() {
 
     fun saveData(name: String, lastName: String){
         if (name.isNotEmpty() && lastName.isNotEmpty()){
-            realm = Realm.getDefaultInstance()
-                CoroutineScope(Dispatchers.IO).launch {
-                    realm = Realm.getDefaultInstance()
-                    realm.apply {
-                        executeTransactionAwait { transaction ->
-                            val model = ProfileRealm(name, lastName)
-                            transaction.insertOrUpdate(model)
-                            setStateSaved(true)
-                        }
+            CoroutineScope(Dispatchers.IO).launch {
+                realm = Realm.getDefaultInstance()
+                realm.apply {
+                    executeTransactionAwait { transaction ->
+                        val model = ProfileRealm(name, lastName)
+                        transaction.insertOrUpdate(model)
+                        setStateSaved(true)
                     }
                 }
+            }
         }else{
             setStateSaved(false)
         }

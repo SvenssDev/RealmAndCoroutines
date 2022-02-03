@@ -25,20 +25,22 @@ class ProfileShowViewModel: ViewModel() {
         getUserInformation()
     }
 
-    private fun getUserInformation() = CoroutineScope(Dispatchers.IO).launch {
+    private fun getUserInformation() {
         val profile = getInfo()
         profileData.postValue(profile)
     }
 
-    private suspend fun getInfo(): ProfileWithoutRealm{
+    private fun getInfo(): ProfileWithoutRealm{
         val profile = ProfileWithoutRealm()
-        realm = Realm.getDefaultInstance()
-        realm.apply {
-            executeTransactionAwait(Dispatchers.IO){ transaction ->
-                val query = transaction.where(ProfileRealm::class.java).findAll()
-                query.map {
-                    profile.name = it.name
-                    profile.lastname = it.lastname
+        CoroutineScope(Dispatchers.IO).launch {
+            realm = Realm.getDefaultInstance()
+            realm.apply {
+                executeTransactionAwait(Dispatchers.IO){ transaction ->
+                    val query = transaction.where(ProfileRealm::class.java).findAll()
+                    query.map {
+                        profile.name = it.name
+                        profile.lastname = it.lastname
+                    }
                 }
             }
         }
